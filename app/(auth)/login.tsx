@@ -39,7 +39,8 @@ export default function LoginScreen() {
       } else {
         Toast.show({
           type: 'success',
-          text1: 'Conta criada com sucesso! Valide seu email e faça login.',
+          //text1: 'Conta criada com sucesso! Valide seu email e faça login.',
+          text1: 'Conta criada com sucesso! Faça login.',
         });
         //Alert.alert('Sucesso', 'Conta criada com sucesso! Faça login.');
         setIsRegistering(false);
