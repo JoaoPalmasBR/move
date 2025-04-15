@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { Session } from '@supabase/supabase-js';
 import { ThemeProvider } from '../context/ThemeContext';
 import { View, ActivityIndicator } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export default function Layout() {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
@@ -48,6 +49,7 @@ export default function Layout() {
     <SafeAreaProvider>
       <ThemeProvider>
         <Slot />
+        <Toast />
       </ThemeProvider>
     </SafeAreaProvider>
   );

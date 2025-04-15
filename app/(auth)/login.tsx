@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { router } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
-
+import Toast from 'react-native-toast-message';
 
 export default function LoginScreen() {
     
@@ -13,32 +13,54 @@ export default function LoginScreen() {
   const [isRegistering, setIsRegistering] = useState(false);
 
   const handleSubmit = async () => {
-    console.log("Enviando dados...");
+    //console.log("Enviando dados...");
     if (!email.includes('@') || senha.length < 6) {
-      Alert.alert('Dados inválidos', 'Email deve ser válido e senha com no mínimo 6 caracteres.');
+      Toast.show({
+        type: 'error',
+        text1: 'Dados inválidos',
+        text2: 'Email deve ser válido e senha com no mínimo 6 caracteres.'
+      });
+      //Alert.alert('Dados inválidos', 'Email deve ser válido e senha com no mínimo 6 caracteres.');
       return;
     }
   
     if (isRegistering) {
-      console.log("Tentando registrar...");
+      //console.log("Tentando registrar...");
       const { data, error } = await supabase.auth.signUp({ email, password: senha });
-      console.log("Resposta registro:", { data, error });
+      //console.log("Resposta registro:", { data, error });
   
       if (error) {
-        Alert.alert('Erro ao registrar', error.message);
+        Toast.show({
+          type: 'error',
+          text1: 'Erro ao Registrar',
+          text2: error.message,
+        });
+        //Alert.alert('Erro ao registrar', error.message);
       } else {
-        Alert.alert('Sucesso', 'Conta criada com sucesso! Faça login.');
+        Toast.show({
+          type: 'success',
+          text1: 'Conta criada com sucesso! Faça login.',
+        });
+        //Alert.alert('Sucesso', 'Conta criada com sucesso! Faça login.');
         setIsRegistering(false);
       }
     } else {
-      console.log("Tentando logar...");
+      //console.log("Tentando logar...");
       const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha });
-      console.log("Resposta login:", { data, error });
+      //console.log("Resposta login:", { data, error });
 
       if (error) {
-        Alert.alert('Erro ao logar', error.message);
+        Toast.show({
+          type: 'error',
+          text1: 'Erro ao logar',
+          text2: error.message,
+        });
+        //Alert.alert('Erro ao logar', error.message);
       } else {
-        Alert.alert('Sucesso!', 'Login efetuado');
+        Toast.show({
+          type: 'success',
+          text1: 'Login realizado com sucesso!',
+        });
         router.replace('/');
       }
 
@@ -54,7 +76,7 @@ export default function LoginScreen() {
       <TouchableOpacity
   style={{ backgroundColor: 'black', padding: 10, marginTop: 10 }}
   onPress={() => {
-    console.log('Cliquei no botão!');
+    //console.log('Cliquei no botão!');
     handleSubmit();
   }}
 >
