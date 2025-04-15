@@ -10,9 +10,14 @@
 ```
 
 ```bash
-    npm install expo-router react-native-safe-area-context react-native-screens react-native-gesture-handler react-native-reanimated
+    npm install expo-router react-native-safe-area-context  
 ```
-
+```bash
+    npm install react-native-screens react-native-gesture-handler
+```
+```bash
+    npm install react-native-reanimated
+```
 ```bash
     npx expo install expo-linking
 ```
