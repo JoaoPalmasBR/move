@@ -18,6 +18,26 @@
 ```
 
 ```bash
+    npm install @supabase/supabase-js
+```
+
+```bash
+    npm install @react-native-async-storage/async-storage
+```
+
+```bash
+    npm install react-native-toast-message
+```
+
+```bash
+    
+```
+
+```bash
+    
+```
+
+```bash
     
 ```
 

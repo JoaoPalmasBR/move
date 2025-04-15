@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "~4.0.1",
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@supabase/supabase-js": "^2.49.4",
     "expo": "~52.0.46",
     "expo-linking": "~7.0.5",
     "expo-router": "^4.0.20",
@@ -22,6 +24,7 @@
     "react-native-reanimated": "^3.17.3",
     "react-native-safe-area-context": "^5.4.0",
     "react-native-screens": "^4.10.0",
+    "react-native-toast-message": "^2.2.1",
     "react-native-web": "~0.19.13"
   },
   "devDependencies": {
