@@ -14,7 +14,7 @@
 ```
 
 ```bash
-    
+    npx expo install expo-linking
 ```
 
 ```bash
