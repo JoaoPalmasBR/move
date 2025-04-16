@@ -8,7 +8,7 @@ export default function HomeScreen() {
   const { theme } = useApp();
   const isDark = theme === 'dark';
   const irParaPerfil = () => {
-    router.push('(auth)/perfil');
+    router.push('perfil');
   };
 
   
