@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { useApp } from '../context/AppContext';
+import { useApp } from '../../context/AppContext';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -8,7 +8,7 @@ export default function HomeScreen() {
   const { theme } = useApp();
   const isDark = theme === 'dark';
   const irParaPerfil = () => {
-    router.push('/perfil');
+    router.push('(auth)/perfil');
   };
 
   

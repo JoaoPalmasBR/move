@@ -1,10 +1,11 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { supabase } from '../lib/supabase';
-import { useEffect, useState } from 'react';
+import { supabase } from '../../lib/supabase';
+import { useEffect, useState, useCallback } from 'react';
 import Toast from 'react-native-toast-message';
-import { useApp } from '../context/AppContext';
+import { useApp } from '../../context/AppContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function PerfilScreen() {
   const router = useRouter();
@@ -15,23 +16,26 @@ export default function PerfilScreen() {
   const [nome, setNome] = useState('Seu Nome');
   const [imagemUrl, setImagemUrl] = useState('https://cdn-icons-png.flaticon.com/512/3135/3135715.png');
 
-  useEffect(() => {
-    const getUser = async () => {
-      const nomeLocal = await AsyncStorage.getItem('perfil_nome');
-      const imagemLocal = await AsyncStorage.getItem('perfil_imagemUrl');
-      if (nomeLocal) setNome(nomeLocal);
-      if (imagemLocal) setImagemUrl(imagemLocal);
-
-      const { data } = await supabase.auth.getUser();
-      const nome = data.user?.user_metadata?.full_name;
-      const imagem = data.user?.user_metadata?.imagemUrl;
-      setUserEmail(data.user?.email ?? null);
-      setNome(nome || 'Usuário');
-      if (imagem) setImagemUrl(imagem);
-    };
-    getUser();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      const getUser = async () => {
+        const nomeLocal = await AsyncStorage.getItem('perfil_nome');
+        const imagemLocal = await AsyncStorage.getItem('perfil_imagemUrl');
+        if (nomeLocal) setNome(nomeLocal);
+        if (imagemLocal) setImagemUrl(imagemLocal);
+  
+        const { data } = await supabase.auth.getUser();
+        const nome = data.user?.user_metadata?.full_name;
+        const imagem = data.user?.user_metadata?.imagemUrl;
+        setUserEmail(data.user?.email ?? null);
+        setNome(nome || 'Usuário');
+        if (imagem) setImagemUrl(imagem);
+      };
+  
+      getUser();
+    }, [])
+  );
+  
   const handleLogout = async () => {
     await supabase.auth.signOut();
     
@@ -62,7 +66,7 @@ export default function PerfilScreen() {
 
       <TouchableOpacity
         style={[styles.editButton, { backgroundColor: isDark ? '#7B2CBF' : '#00B2CA' }]}
-        onPress={() => router.push('/perfil/editar')}
+        onPress={() => router.push('/(tabs)/perfil/editar')}
       >
         <Text style={styles.editButtonText}>Editar Perfil</Text>
       </TouchableOpacity>

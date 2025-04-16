@@ -2,10 +2,10 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Alert, Plat
 import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
 import Toast from 'react-native-toast-message';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
-import { useApp } from '../../context/AppContext';
+import { useApp } from '../../../context/AppContext';
 
 export default function EditarPerfil() {
   const router = useRouter();
@@ -34,19 +34,47 @@ export default function EditarPerfil() {
   }, []);
 
   const handleSalvar = async () => {
+    // Salva localmente os dados antes de atualizar remotamente
     await AsyncStorage.setItem('perfil_nome', nome);
     await AsyncStorage.setItem('perfil_imagemUrl', imagemUrl ?? '');
-
-    const { error } = await supabase.auth.updateUser({ data: { full_name: nome } });
-
+  
+    // Atualiza no Supabase
+    const { error } = await supabase.auth.updateUser({
+      data: { full_name: nome, imagemUrl },
+    });
+  
     if (error) {
       Toast.show({ type: 'error', text1: 'Erro!', text2: error.message });
-    } else {
-      Toast.show({ type: 'success', text1: 'Perfil atualizado!' });
-      router.replace('/perfil');
+      return;
     }
+  
+    // Busca os dados atualizados do usuário
+    const { data: updatedUser, error: fetchError } = await supabase.auth.getUser();
+    if (fetchError) {
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao atualizar localmente',
+        text2: fetchError.message,
+      });
+      return;
+    }
+  
+    const nomeAtualizado = updatedUser.user?.user_metadata?.full_name;
+    const imagemAtualizada = updatedUser.user?.user_metadata?.imagemUrl;
+  
+    // Atualiza estados locais e persistência
+    await AsyncStorage.setItem('perfil_nome', nomeAtualizado ?? '');
+    await AsyncStorage.setItem('perfil_imagemUrl', imagemAtualizada ?? '');
+  
+    // (opcional) Atualiza os estados da tela
+    setNome(nomeAtualizado ?? '');
+    setImagemUrl(imagemAtualizada ?? '');
+  
+    // Feedback + volta para a tela de perfil
+    Toast.show({ type: 'success', text1: 'Perfil atualizado!' });
+    router.replace('/(tabs)/perfil');
   };
-
+  
   const escolherImagem = async () => {
     if (Platform.OS === 'web') {
       Alert.alert('Upload de imagem não é suportado no navegador. Teste no celular.');
