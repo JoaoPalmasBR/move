@@ -80,65 +80,73 @@ export default function EditarPerfil() {
       Alert.alert('Upload de imagem não é suportado no navegador. Teste no celular.');
       return;
     }
-
+  
+    // Verifica se o usuário está logado
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    const user = userData?.user;
+  
+    if (userError || !user || !user.id) {
+      Alert.alert('Erro de autenticação', 'Você precisa estar logado para alterar a imagem de perfil.');
+      return;
+    }
+  
+    // Solicita permissão
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permissão negada', 'Você precisa permitir acesso à galeria.');
       return;
     }
-
+  
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.7,
       allowsEditing: true,
     });
-
+  
     if (!result.canceled && result.assets.length > 0) {
       const img = result.assets[0];
       const ext = img.uri.split('.').pop();
-
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError || !userData.user) {
-        Alert.alert('Erro ao obter usuário');
-        return;
-      }
-
-      const userId = userData.user.id;
-      const fileName = `${userId}.${ext}`;
-      const filePath = `${userId}/${fileName}`;
-
+      const fileName = `${user.id}.${ext}`;
+      const filePath = `${user.id}/${fileName}`;
+  
       const file = {
         uri: img.uri,
         name: fileName,
         type: img.type || 'image/jpeg',
       };
-
+  
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file as any, {
           cacheControl: '3600',
           upsert: true,
         });
-
+  
       if (uploadError) {
         Alert.alert('Erro ao enviar imagem', uploadError.message);
+        return;
+      }
+  
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      const imagemUrl = data.publicUrl;
+  
+      const { error: metaError } = await supabase.auth.updateUser({
+        data: { imagemUrl },
+      });
+  
+      if (metaError) {
+        Alert.alert('Erro ao salvar imagem no perfil', metaError.message);
       } else {
-        const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
-        const imagemUrl = data.publicUrl;
-
-        const { error: metaError } = await supabase.auth.updateUser({
-          data: { imagemUrl },
+        setImagemUrl(imagemUrl);
+        await AsyncStorage.setItem('perfil_imagemUrl', imagemUrl);
+        Toast.show({
+          type: 'success',
+          text1: 'Imagem atualizada',
         });
-
-        if (metaError) {
-          Alert.alert('Erro ao salvar imagem no perfil', metaError.message);
-        } else {
-          setImagemUrl(imagemUrl);
-          Toast.show({ type: 'success', text1: 'Imagem atualizada' });
-        }
       }
     }
   };
+  
 
   return (
     <View style={[styles.container, { backgroundColor: isDark ? '#1e1e2e' : '#ffffff' }]}>
