@@ -1,6 +1,7 @@
 # Move
 
 ## Codigos Executados
+
 ```bash
     npx create-expo-app move -t expo-template-blank-typescript
 ```
@@ -10,14 +11,17 @@
 ```
 
 ```bash
-    npm install expo-router react-native-safe-area-context  
+    npm install expo-router react-native-safe-area-context
 ```
+
 ```bash
     npm install react-native-screens react-native-gesture-handler
 ```
+
 ```bash
     npm install react-native-reanimated
 ```
+
 ```bash
     npx expo install expo-linking
 ```
@@ -36,6 +40,7 @@
 
 ```bash
     npx expo install expo-image-picker
+    npx expo install expo-image-picker@latest
 ```
 
 ```bash
@@ -49,12 +54,15 @@
 ```bash
     npm install react-native-community/netinfo
 ```
+
 ```bash
 
 ```
+
 ```bash
 
 ```
+
 ```bash
 
 ```
