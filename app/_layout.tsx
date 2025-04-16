@@ -12,6 +12,7 @@ export default function Layout() {
   const router = useRouter();
   const segments = useSegments();
 
+  // Recupera e escuta a sessão
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session ?? null);
@@ -22,10 +23,11 @@ export default function Layout() {
     });
 
     return () => {
-      listener.subscription.unsubscribe();
+      listener.subscription.unsubscribe(); // ✅ agora está correto
     };
   }, []);
 
+  // Redirecionamento baseado na sessão
   useEffect(() => {
     if (session === undefined) return;
     const inAuthGroup = segments[0] === '(auth)';

@@ -35,15 +35,16 @@
 ```
 
 ```bash
-    
+    npx expo install expo-image-picker
 ```
 
 ```bash
-    
+    npm install react-native-uuid
 ```
 
 ```bash
-    
+    npx expo install @react-native-async-storage/async-storage
+
 ```
 
 ```bash
