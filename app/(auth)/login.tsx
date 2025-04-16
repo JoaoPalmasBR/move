@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity,
+  View, Image, Text, TextInput, TouchableOpacity,
   StyleSheet, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { supabase } from '../../lib/supabase';
@@ -8,6 +8,7 @@ import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../../context/AppContext';
+
 
 export default function LoginScreen() {
   const { theme, toggleTheme } = useApp(); // 👈 usando tema
@@ -17,6 +18,7 @@ export default function LoginScreen() {
   const [senha, setSenha] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
 
+  
   const handleSubmit = async () => {
     if (!email.includes('@') || senha.length < 6) {
       Toast.show({
@@ -50,39 +52,44 @@ export default function LoginScreen() {
     <KeyboardAvoidingView
       style={[
         styles.container,
-        { backgroundColor: isDark ? '#121212' : '#fff' },
+        { backgroundColor: isDark ? '#1e1e2e' : '#ffffff' },
       ]}
       behavior={Platform.select({ ios: 'padding', android: undefined })}
     >
       <View style={[styles.header, { backgroundColor: isDark ? '#333' : '#7B2CBF' }]}>
         <View style={[styles.avatarPlaceholder, { backgroundColor: isDark ? '#555' : '#a25be3' }]}>
-          <Ionicons name="person" size={64} color="#fff" />
+          
+          <Image
+            source={require('../../assets/icon.png')}
+            style={{ width: 200, height: 200, borderRadius: 0 }}
+            resizeMode="contain"
+          />
         </View>
       </View>
 
       <View style={styles.form}>
-        <View style={[styles.inputContainer, { backgroundColor: isDark ? '#222' : '#F2F2F2' }]}>
+        <View style={[styles.inputContainer, { backgroundColor: isDark ? '#2a2a3b' : '#F2F2F2' }]}>
           <Ionicons name="mail-outline" size={20} color="#999" style={styles.icon} />
           <TextInput
             placeholder="Email"
-            placeholderTextColor={isDark ? '#aaa' : '#666'}
+            placeholderTextColor={isDark ? '#cccccc' : '#666'}
             value={email}
             onChangeText={setEmail}
-            style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
+            style={[styles.input, { color: isDark ? '#ffffff' : '#000000' }]}
             autoCapitalize="none"
             keyboardType="email-address"
           />
         </View>
 
-        <View style={[styles.inputContainer, { backgroundColor: isDark ? '#222' : '#F2F2F2' }]}>
+        <View style={[styles.inputContainer, { backgroundColor: isDark ? '#2a2a3b' : '#F2F2F2' }]}>
           <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.icon} />
           <TextInput
             placeholder="Senha"
-            placeholderTextColor={isDark ? '#aaa' : '#666'}
+            placeholderTextColor={isDark ? '#cccccc' : '#666'}
             value={senha}
             onChangeText={setSenha}
             secureTextEntry
-            style={[styles.input, { color: isDark ? '#fff' : '#000' }]}
+            style={[styles.input, { color: isDark ? '#ffffff' : '#000000' }]}
           />
         </View>
 
@@ -150,7 +157,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontWeight: 'bold',
     fontSize: 16,
   },

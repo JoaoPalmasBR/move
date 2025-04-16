@@ -1,4 +1,3 @@
-// context/AuthContext.tsx
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,19 +10,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isReady, setIsReady] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
 
-  // Carrega sessão do Supabase ou fallback do AsyncStorage
   useEffect(() => {
     const init = async () => {
       const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        setSession(data.session);
-        await AsyncStorage.setItem('last_session', JSON.stringify(data.session));
+      const supabaseSession = data.session;
+
+      if (supabaseSession) {
+        setSession(supabaseSession);
+        await AsyncStorage.setItem('last_session', JSON.stringify(supabaseSession));
       } else {
         const local = await AsyncStorage.getItem('last_session');
-        if (local) setSession(JSON.parse(local));
+        if (local) {
+          try {
+            const parsed = JSON.parse(local);
+            // opcional: verificar validade do token
+            if (parsed?.access_token) {
+              setSession(parsed);
+            } else {
+              await AsyncStorage.removeItem('last_session');
+            }
+          } catch {
+            await AsyncStorage.removeItem('last_session');
+          }
+        }
       }
+
       setIsReady(true);
     };
+
     init();
   }, []);
 

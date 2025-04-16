@@ -113,13 +113,13 @@ export default function EditarPerfil() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#121212' : '#fff' }]}>
-      <Text style={[styles.title, { color: isDark ? '#fff' : '#000' }]}>Editar Perfil</Text>
+    <View style={[styles.container, { backgroundColor: isDark ? '#1e1e2e' : '#ffffff' }]}>
+      <Text style={[styles.title, { color: isDark ? '#ffffff' : '#000000' }]}>Editar Perfil</Text>
 
       <TouchableOpacity style={styles.profileImageContainer} onPress={escolherImagem}>
         <Image source={{ uri: imagemUrl }} style={styles.profileImage} />
-        <View style={[styles.editOverlay, { backgroundColor: isDark ? '#444' : '#eee' }]}>
-          <Text style={[styles.editIcon, { color: isDark ? '#fff' : '#000' }]}>📸</Text>
+        <View style={[styles.editOverlay, { backgroundColor: isDark ? '#393956' : '#eee' }]}>
+          <Text style={[styles.editIcon, { color: isDark ? '#ffffff' : '#000000' }]}>📸</Text>
         </View>
       </TouchableOpacity>
 
@@ -127,13 +127,13 @@ export default function EditarPerfil() {
         style={[
           styles.input,
           {
-            backgroundColor: isDark ? '#222' : '#fff',
-            borderColor: isDark ? '#444' : '#ccc',
-            color: isDark ? '#fff' : '#000',
+            backgroundColor: isDark ? '#2a2a3b' : '#ffffff',
+            borderColor: isDark ? '#393956' : '#ccc',
+            color: isDark ? '#ffffff' : '#000000',
           },
         ]}
         placeholder="Digite seu nome"
-        placeholderTextColor={isDark ? '#aaa' : '#888'}
+        placeholderTextColor={isDark ? '#cccccc' : '#888'}
         value={nome}
         onChangeText={setNome}
       />
@@ -150,7 +150,7 @@ export default function EditarPerfil() {
         style={[styles.saveButton, { backgroundColor: isDark ? '#555' : '#ccc' }]}
         onPress={() => router.push('/perfil')}
       >
-        <Text style={[styles.saveButtonText, { color: isDark ? '#fff' : '#000' }]}>Voltar para o Perfil</Text>
+        <Text style={[styles.saveButtonText, { color: isDark ? '#ffffff' : '#000000' }]}>Voltar para o Perfil</Text>
       </TouchableOpacity>
     </View>
   );

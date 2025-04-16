@@ -34,24 +34,31 @@ export default function PerfilScreen() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    
+    // ⬇️ REMOVE do armazenamento local também:
+    await AsyncStorage.removeItem('last_session');
+    
+    await AsyncStorage.removeItem('sb-esnhnmuyfejtneboscsz-auth-token');
+    
+    
     Toast.show({ type: 'success', text1: 'Logout realizado' });
     router.replace('/(auth)/login');
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#121212' : '#fff' }]}>
+    <View style={[styles.container, { backgroundColor: isDark ? '#1e1e2e' : '#ffffff' }]}>
       <View style={styles.profileImageContainer}>
         <Image
           source={{ uri: imagemUrl }}
           style={styles.profileImage}
         />
-        <TouchableOpacity style={[styles.editIcon, { backgroundColor: isDark ? '#444' : '#e0e0e0' }]}>
-          <Text style={[styles.editText, { color: isDark ? '#eee' : '#000' }]}>✏️</Text>
+        <TouchableOpacity style={[styles.editIcon, { backgroundColor: isDark ? '#393956' : '#e0e0e0' }]}>
+          <Text style={[styles.editText, { color: isDark ? '#eee' : '#000000' }]}>✏️</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={[styles.nameText, { color: isDark ? '#fff' : '#000' }]}>{nome}</Text>
-      <Text style={[styles.emailText, { color: isDark ? '#aaa' : '#777' }]}>{userEmail || 'email@exemplo.com'}</Text>
+      <Text style={[styles.nameText, { color: isDark ? '#ffffff' : '#000000' }]}>{nome}</Text>
+      <Text style={[styles.emailText, { color: isDark ? '#cccccc' : '#777' }]}>{userEmail || 'email@exemplo.com'}</Text>
 
       <TouchableOpacity
         style={[styles.editButton, { backgroundColor: isDark ? '#7B2CBF' : '#00B2CA' }]}
@@ -77,7 +84,7 @@ export default function PerfilScreen() {
 function ProfileOption({ title, isDark }: { title: string; isDark: boolean }) {
   return (
     <TouchableOpacity style={[styles.optionRow, { borderBottomColor: isDark ? '#333' : '#eee' }]}>
-      <Text style={[styles.optionText, { color: isDark ? '#eee' : '#000' }]}>▸ {title}</Text>
+      <Text style={[styles.optionText, { color: isDark ? '#eee' : '#000000' }]}>▸ {title}</Text>
     </TouchableOpacity>
   );
 }
