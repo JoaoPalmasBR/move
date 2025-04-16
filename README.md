@@ -44,9 +44,17 @@
 
 ```bash
     npx expo install @react-native-async-storage/async-storage
-
 ```
 
 ```bash
-    
+    npm install react-native-community/netinfo
+```
+```bash
+
+```
+```bash
+
+```
+```bash
+
 ```

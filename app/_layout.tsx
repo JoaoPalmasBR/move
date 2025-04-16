@@ -6,40 +6,24 @@ import { Session } from '@supabase/supabase-js';
 import { ThemeProvider } from '../context/ThemeContext';
 import { View, ActivityIndicator } from 'react-native';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthProvider, useAuth } from '../context/AuthContext';
+import { AppProvider } from '../context/AppContext';
 
-export default function Layout() {
-  const [session, setSession] = useState<Session | null | undefined>(undefined);
-  const router = useRouter();
-  const segments = useSegments();
+function RootLayout() {
+  return (
+    <AuthProvider>
+      <AppProvider>
+        <LayoutContent />
+      </AppProvider>
+    </AuthProvider>
+  );
+}
 
-  // Recupera e escuta a sessão
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session ?? null);
-    });
+function LayoutContent() {
+  const { isReady } = useAuth();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => {
-      listener.subscription.unsubscribe(); // ✅ agora está correto
-    };
-  }, []);
-
-  // Redirecionamento baseado na sessão
-  useEffect(() => {
-    if (session === undefined) return;
-    const inAuthGroup = segments[0] === '(auth)';
-
-    if (!session && !inAuthGroup) {
-      router.replace('/(auth)/login');
-    } else if (session && inAuthGroup) {
-      router.replace('/');
-    }
-  }, [session, segments]);
-
-  if (session === undefined) {
+  if (!isReady) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />
@@ -56,3 +40,5 @@ export default function Layout() {
     </SafeAreaProvider>
   );
 }
+
+export default RootLayout;

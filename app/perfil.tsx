@@ -1,5 +1,6 @@
 // app/perfil.tsx
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { supabase } from '../lib/supabase';
 import { useEffect, useState } from 'react';
@@ -13,6 +14,11 @@ export default function PerfilScreen() {
 
   useEffect(() => {
     const getUser = async () => {
+    const nomeLocal = await AsyncStorage.getItem('perfil_nome');
+    const imagemLocal = await AsyncStorage.getItem('perfil_imagemUrl');
+    if (nomeLocal) setNome(nomeLocal);
+    if (imagemLocal) setImagemUrl(imagemLocal);
+
     const { data } = await supabase.auth.getUser();
     const nome = data.user?.user_metadata?.full_name;
     const imagem = data.user?.user_metadata?.imagemUrl;

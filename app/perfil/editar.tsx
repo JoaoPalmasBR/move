@@ -15,6 +15,11 @@ export default function EditarPerfil() {
 
   useEffect(() => {
     const carregarDados = async () => {
+    const nomeLocal = await AsyncStorage.getItem('perfil_nome');
+    const imagemLocal = await AsyncStorage.getItem('perfil_imagemUrl');
+    if (nomeLocal) setNome(nomeLocal);
+    if (imagemLocal) setImagemUrl(imagemLocal);
+
     const { data } = await supabase.auth.getUser();
     const nomeSalvo = data.user?.user_metadata?.full_name;
     const imagemSalva = data.user?.user_metadata?.imagemUrl;
@@ -27,6 +32,9 @@ export default function EditarPerfil() {
   }, []);
 
   const handleSalvar = async () => {
+  await AsyncStorage.setItem('perfil_nome', nome);
+  await AsyncStorage.setItem('perfil_imagemUrl', imagemUrl ?? '');
+
     const { data, error } = await supabase.auth.updateUser({
     data: { full_name: nome }, // em vez de "nome"
   });
