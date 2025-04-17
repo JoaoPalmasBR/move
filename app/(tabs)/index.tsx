@@ -1,16 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Platform, ActivityIndicator, Text } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { View, Text, Platform, ActivityIndicator, StyleSheet, Image } from 'react-native';
 import * as Location from 'expo-location';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '../../lib/supabase';
 
 export default function HomeMapScreen() {
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [MapView, setMapView] = useState<any>(null);
+  const [Marker, setMarker] = useState<any>(null);
+  const [imagemUrl, setImagemUrl] = useState<string | null>(null);
 
   useEffect(() => {
+    if (Platform.OS !== 'web') {
+      const map = require('react-native-maps');
+      setMapView(() => map.default);
+      setMarker(() => map.Marker);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
-
       if (status !== 'granted') {
         setErrorMsg('Permissão de localização negada');
         return;
@@ -18,10 +31,14 @@ export default function HomeMapScreen() {
 
       const currentLocation = await Location.getCurrentPositionAsync({});
       setLocation(currentLocation);
+
+      const { data } = await supabase.auth.getUser();
+      const url = data.user?.user_metadata?.imagemUrl;
+      const local = await AsyncStorage.getItem('perfil_imagemUrl');
+      setImagemUrl(url ?? local);
     })();
   }, []);
 
-  // 👉 Proteção para web
   if (Platform.OS === 'web') {
     return (
       <View style={styles.webContainer}>
@@ -32,37 +49,39 @@ export default function HomeMapScreen() {
     );
   }
 
-  // Carregando localização
-  if (!location) {
+  if (!MapView || !Marker || !location) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
-        {errorMsg && <Text style={{ marginTop: 10, color: 'red' }}>{errorMsg}</Text>}
+        {errorMsg && <Text style={{ color: 'red', marginTop: 10 }}>{errorMsg}</Text>}
       </View>
     );
   }
 
   return (
     <MapView
-      style={styles.map}
-      provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : undefined}
-      showsUserLocation
-      initialRegion={{
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      }}
-    >
-      <Marker
-        coordinate={{
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        }}
-        title="Você"
-        description="Sua localização atual"
+  style={styles.map}
+  provider={Platform.OS === 'android' ? MapView.PROVIDER_GOOGLE : undefined}
+  initialRegion={{
+    latitude: location.coords.latitude,
+    longitude: location.coords.longitude,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  }}
+>
+  <Marker coordinate={{
+    latitude: location.coords.latitude,
+    longitude: location.coords.longitude,
+  }}>
+    <View style={styles.markerContainer}>
+      <Image
+        source={{ uri: imagemUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}
+        style={styles.markerImage}
       />
-    </MapView>
+    </View>
+  </Marker>
+</MapView>
+
   );
 }
 
@@ -80,5 +99,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
+  },
+  markerContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: '#fff',
+    backgroundColor: '#eee',
+  },
+  markerImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
 });
