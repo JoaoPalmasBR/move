@@ -20,6 +20,7 @@
     button {
       padding: .5rem 1rem;
       font-size: 1rem;
+      margin-right: .5rem;
     }
     pre {
       background: #f4f4f4;
@@ -45,9 +46,14 @@
 
   <h2>JSON formatado:</h2>
   <pre id="jsonOutput">{"lat": "...", "long": "..."}</pre>
+  <button id="copyBtn">Copiar JSON</button>
 
   <script>
-    document.getElementById('jsonForm').addEventListener('submit', function(e) {
+    const form = document.getElementById('jsonForm');
+    const output = document.getElementById('jsonOutput');
+    const copyBtn = document.getElementById('copyBtn');
+
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
       const raw = document.getElementById('coordsInput').value;
       const parts = raw.split(',');
@@ -58,7 +64,20 @@
       const lat = parts[0].trim();
       const long = parts[1].trim();
       const obj = { lat, long };
-      document.getElementById('jsonOutput').textContent = JSON.stringify(obj);
+      output.textContent = JSON.stringify(obj);
+    });
+
+    copyBtn.addEventListener('click', function() {
+      const text = output.textContent;
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          copyBtn.textContent = 'Copiado!';
+          setTimeout(() => { copyBtn.textContent = 'Copiar JSON'; }, 1500);
+        })
+        .catch(err => {
+          console.error('Erro ao copiar: ', err);
+          alert('Não foi possível copiar para a área de transferência.');
+        });
     });
   </script>
 </body>
