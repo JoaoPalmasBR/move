@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const init = async () => {
+      // Tenta obter a sessão do Supabase
       const { data } = await supabase.auth.getSession();
       const supabaseSession = data.session;
 
@@ -19,11 +20,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(supabaseSession);
         await AsyncStorage.setItem('last_session', JSON.stringify(supabaseSession));
       } else {
+        // Tenta restaurar do AsyncStorage (caso do Expo Go)
         const local = await AsyncStorage.getItem('last_session');
         if (local) {
           try {
             const parsed = JSON.parse(local);
-            // opcional: verificar validade do token
             if (parsed?.access_token) {
               setSession(parsed);
             } else {
@@ -41,10 +42,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     init();
   }, []);
 
-  // Escuta mudanças na sessão
+  // Escuta mudanças na sessão (login, logout)
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+
       if (session) {
         AsyncStorage.setItem('last_session', JSON.stringify(session));
       } else {
@@ -57,7 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
-  // Verifica status de conexão
+  // Escuta conectividade de rede
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsOnline(state.isConnected && state.isInternetReachable);
