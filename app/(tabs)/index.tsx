@@ -62,7 +62,7 @@ export default function HomeMapScreen() {
       }
 
       const { lat, long } = data.latlong;
-      console.log('Coordenadas recebidas:', lat, long);
+      console.log('Coordenadas casa:', lat, long);
 
       if (!lat || !long) {
         Toast.show({ type: 'error', text1: 'Coordenadas inválidas' });
@@ -76,7 +76,65 @@ export default function HomeMapScreen() {
         longitudeDelta: 0.01,
       }, 1000);
     } catch (err) {
-      console.error('Erro inesperado ao buscar coordenadas:', err);
+      console.error('Erro inesperado ao buscar coordenadas da casa:', err);
+      Toast.show({ type: 'error', text1: 'Erro inesperado' });
+    }
+  };
+
+  const irParaUniversidade = async () => {
+    console.log('Clicou no botão UNIVERSIDADE');
+
+    try {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData.user) {
+        console.log('Erro ao obter usuário:', userError);
+        return Toast.show({ type: 'error', text1: 'Erro ao obter usuário' });
+      }
+
+      const userId = userData.user.id;
+      console.log('UUID do usuário:', userId);
+
+      const { data: vinculo, error: vinculoError } = await supabase
+        .from('usuario_faculdade')
+        .select('facul')
+        .eq('usuario', userId)
+        .single();
+
+      if (vinculoError || !vinculo?.facul) {
+        console.log('Erro ao obter vínculo universidade:', vinculoError);
+        return Toast.show({ type: 'error', text1: 'Vínculo com universidade não encontrado' });
+      }
+
+      const faculId = vinculo.facul;
+      console.log('UUID da faculdade:', faculId);
+
+      const { data: loc, error: locError } = await supabase
+        .from('loc_facul')
+        .select('latlong')
+        .eq('facul', faculId)
+        .single();
+
+      if (locError || !loc?.latlong) {
+        console.log('Erro ao obter local da universidade:', locError);
+        return Toast.show({ type: 'error', text1: 'Local da universidade não encontrado' });
+      }
+
+      const { lat, long } = loc.latlong;
+      console.log('Coordenadas universidade:', lat, long);
+
+      if (!lat || !long) {
+        return Toast.show({ type: 'error', text1: 'Coordenadas inválidas' });
+      }
+
+      mapRef.current?.animateToRegion({
+        latitude: parseFloat(lat),
+        longitude: parseFloat(long),
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }, 1000);
+
+    } catch (err) {
+      console.error('Erro inesperado ao buscar universidade:', err);
       Toast.show({ type: 'error', text1: 'Erro inesperado' });
     }
   };
@@ -108,7 +166,7 @@ export default function HomeMapScreen() {
             <Ionicons name="home" size={24} color="#7B2CBF" />
             <Text style={styles.cardLabel}>Casa</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cardButton} onPress={() => {}}>
+          <TouchableOpacity style={styles.cardButton} onPress={irParaUniversidade}>
             <Ionicons name="school" size={24} color="#7B2CBF" />
             <Text style={styles.cardLabel}>Universidade</Text>
           </TouchableOpacity>
